@@ -7,7 +7,9 @@
   "scripts": {
     "start": "pm2 start index.js",
     "test": "node index.js",
-    "generate": "npx prisma generate"
+    "push:db": "npx prisma db push",
+    "generate": "npx prisma generate",
+    "studio": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",
