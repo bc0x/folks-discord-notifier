@@ -5,10 +5,8 @@
   "author": "bcox",
   "license": "MIT",
   "scripts": {
-    "start": "pm2 start dist/index.js",
-    "test": "node dist/index.js",
-    "build": "tsc",
-    "postinstall": "npx patch-package"
+    "start": "pm2 start index.js",
+    "test": "node index.js"
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",
