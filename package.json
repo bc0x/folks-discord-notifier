@@ -9,7 +9,8 @@
     "test": "node index.js",
     "push:db": "npx prisma db push",
     "generate": "npx prisma generate",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "monitor": "pm2 monit"
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",
