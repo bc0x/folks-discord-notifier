@@ -3,7 +3,6 @@
 # dependencies
 /lib/folks-finance-js-sdk/docs
 /lib/folks-finance-js-sdk/examples
-/lib/folks-finance-js-sdk/src
 /node_modules
 /.pnp
 .pnp.js
