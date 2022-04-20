@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "pm2 start index.js",
-    "start": "pm2 stop 0",
+    "stop": "pm2 stop 0",
     "test": "node index.js",
     "push:db": "npx prisma db push",
     "generate": "npx prisma generate",
