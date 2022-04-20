@@ -9,15 +9,12 @@ const {
 require('dotenv').config();
 
 console.log('*** BOT RUNNING ***');
-
-discord.once('ready', () => {
-  discord.login(process.env.DISCORD_BOT_TOKEN);
-});
+discord.login(process.env.DISCORD_BOT_TOKEN);
 
 (async () => {
   while (true) {
     const t = await triggerNotifications();
-    console.log('success', t);
+    console.log('*** Triggering Notifications Result ***', t);
     await new Promise((resolve) => setTimeout(resolve, 1000 * 60 * 15)); // 15 minutes
   }
 })();
