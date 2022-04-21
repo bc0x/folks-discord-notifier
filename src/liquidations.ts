@@ -8,6 +8,8 @@ import { Liquidation } from '@prisma/client';
 dontenv.config();
 discord.login(process.env.DISCORD_BOT_TOKEN);
 
+const DEFAULT_START_ROUND = 20533346;
+const ROUND_INTERVAL = 1000;
 const APP_DICTIONARY = Object.entries(MainnetTokenPairs).map(([pair, data]) => {
   return {
     pair,
@@ -50,9 +52,18 @@ async function start() {
   }, 1000 * 60 * 5); // 5 minutes
 }
 
-// TODO
 async function getStartingRound(): Promise<number> {
-  return Promise.resolve(20240000);
+  const startingRound = await prisma.liquidation.findFirst({
+    select: {
+      maxRoundSearched: true,
+    },
+    orderBy: {
+      maxRoundSearched: 'desc',
+    },
+  });
+  return Promise.resolve(
+    startingRound?.maxRoundSearched ?? DEFAULT_START_ROUND
+  );
 }
 
 async function getMaxRound(): Promise<number> {
@@ -64,13 +75,13 @@ async function getLiquidationTxns(
   applicationId: number,
   liquidationTxns: any[],
   maxBlock: number,
-  startingRound: number = 20240000
+  startingRound: number = DEFAULT_START_ROUND
 ): Promise<any[]> {
   if (startingRound < maxBlock) {
     const foundAppTxns = await indexer
       .searchForTransactions()
       .applicationID(applicationId)
-      .maxRound(startingRound + 1000)
+      .maxRound(startingRound + ROUND_INTERVAL)
       .minRound(startingRound)
       .do();
     const txns = foundAppTxns.transactions;
@@ -87,7 +98,7 @@ async function getLiquidationTxns(
       applicationId,
       liquidationTxns,
       maxBlock,
-      startingRound + 1000
+      startingRound + ROUND_INTERVAL
     );
   }
 
