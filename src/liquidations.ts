@@ -45,11 +45,13 @@ async function start() {
         maxRound
       );
       const created = await createLiquidations(parsedData);
-      console.log(`*** ${pair} - ${created} liqudations created ***`);
+      console.log(
+        `*** ${pair} - ${parsedData.length} liqudations created, ${created} ***`
+      );
     }
     startingRound = maxRound;
     maxRound = await getMaxRound();
-  }, 1000 * 60 * 5); // 5 minutes
+  }, 1000 * 60 * 5); // 5 minute
 }
 
 async function getStartingRound(): Promise<number> {
