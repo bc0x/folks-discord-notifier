@@ -27,9 +27,7 @@ async function start() {
   interval = setInterval(async () => {
     for (const entry of APP_DICTIONARY) {
       const { appId, collateralPool, borrowPool, pair } = entry;
-      console.log(
-        `*** Searching ${pair} from ${startingRound} to ${maxRound} ***`
-      );
+      console.log(`*** ${pair} - ${startingRound} to ${maxRound} ***`);
       const liquidations = await getLiquidationTxns(
         appId as number,
         [],
@@ -45,6 +43,7 @@ async function start() {
         maxRound
       );
       const created = await createLiquidations(parsedData);
+      console.log(`*** ${pair} - ${created} liqudations created ***`);
     }
     startingRound = maxRound;
     maxRound = await getMaxRound();
@@ -141,6 +140,7 @@ function stop() {
   if (interval === null) return;
   clearInterval(interval);
   interval = null;
+  console.log('*** BOT STOPPED ***');
 }
 
 start();
