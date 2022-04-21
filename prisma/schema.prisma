@@ -32,6 +32,22 @@ model LoanNotification {
   healthFactor                      Float
 }
 
+model Liquidation {
+  id                        String   @id @default(uuid())
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  pair                      String
+  collateral                String
+  collateralReceived        Float
+  collateralReceivedAssetId Float
+  borrow                    String
+  amountPaid                Float
+  amountPaidAssetId         Float
+  group                     String   @unique
+  liquidatorWallet          String
+  maxRoundSearched          Float
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String

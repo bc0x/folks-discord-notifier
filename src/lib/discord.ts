@@ -1,7 +1,8 @@
 // lib/discord.ts
-const { Client, Intents } = require('discord.js');
+// having to use an old version due to vercel node v14
+import { Client, Intents } from 'discord.js';
 
-let discord;
+let discord: Client;
 
 if (process.env.NODE_ENV === 'production') {
   discord = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -9,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
   if (!global.discord) {
     global.discord = new Client({ intents: [Intents.FLAGS.GUILDS] });
   }
-  discord = global.discord;
+  discord = global.discord as Client;
 }
 
-module.exports = discord;
+export default discord;

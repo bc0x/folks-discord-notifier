@@ -1,7 +1,7 @@
 // lib/indexer.ts
-const { Indexer } = require('algosdk');
+import { Indexer } from 'algosdk';
 
-let indexer;
+let indexer: Indexer;
 
 if (process.env.NODE_ENV === 'production') {
   indexer = new Indexer('null', 'https://algoindexer.algoexplorerapi.io', '');
@@ -16,4 +16,4 @@ if (process.env.NODE_ENV === 'production') {
   indexer = global.indexer;
 }
 
-module.exports = indexer;
+export default indexer;

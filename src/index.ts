@@ -1,23 +1,32 @@
-const discord = require('./lib/discord');
-const prisma = require('./lib/prisma');
-const indexer = require('./lib/indexer');
-const { BigIntToNumber } = require('./lib/helpers');
-const {
+import discord from './lib/discord';
+import prisma from './lib/prisma';
+import indexer from './lib/indexer';
+import { BigIntToNumber } from './lib/helpers';
+import {
   getLoanInfo,
   MainnetOracle,
-} = require('./lib/folks-finance-js-sdk/dist');
-require('dotenv').config();
+  Pool,
+  TokenPair,
+} from 'folks-finance-js-sdk';
+import dontenv from 'dotenv';
+dontenv.config();
 
-console.log('*** BOT RUNNING ***');
+console.log('*** NOTIFICATION BOT RUNNING ***');
 discord.login(process.env.DISCORD_BOT_TOKEN);
+let interval: NodeJS.Timer | null;
 
-(async () => {
-  while (true) {
+async function start() {
+  interval = setInterval(async () => {
     const t = await triggerNotifications();
     console.log('*** Triggering Notifications Result ***', t);
-    await new Promise((resolve) => setTimeout(resolve, 1000 * 60 * 15)); // 15 minutes
-  }
-})();
+  }, 1000 * 60 * 5); // 5 minutes
+}
+
+function stop() {
+  if (interval === null) return;
+  clearInterval(interval);
+  interval = null;
+}
 
 async function triggerNotifications() {
   console.log('*** Triggering Notifications ***');
@@ -28,10 +37,10 @@ async function triggerNotifications() {
       },
     });
     for (const dbLoan of dbLoans) {
-      const tokenPair = {
+      const tokenPair: TokenPair = {
         appId: dbLoan.appId,
-        collateralPool: dbLoan.collateralPool,
-        borrowPool: dbLoan.borrowPool,
+        collateralPool: dbLoan.collateralPool as unknown as Pool,
+        borrowPool: dbLoan.borrowPool as unknown as Pool,
         linkAddr: dbLoan.linkAddr,
       };
       const loanInfo = await getLoanInfo(
@@ -41,7 +50,7 @@ async function triggerNotifications() {
         dbLoan.escrowAddress
       );
       console.log('Loan info received for', dbLoan.escrowAddress);
-      var shouldNotifyDate = new Date();
+      let shouldNotifyDate = new Date();
       shouldNotifyDate.setDate(shouldNotifyDate.getDate() - 1);
       if (
         BigIntToNumber(loanInfo.healthFactor, 14) < dbLoan.notifyHealthFactor &&
@@ -53,7 +62,9 @@ async function triggerNotifications() {
             user: { id: dbLoan.user.id },
           },
         });
-        const user = await discord.users.fetch(account?.providerAccountId);
+        const user = await discord.users.fetch(
+          account?.providerAccountId as string
+        );
         const msg = `Hey there, you're at risk of getting liquidated: ${
           dbLoan.pair
         } health at ${BigIntToNumber(loanInfo.healthFactor, 14)}`;
@@ -76,3 +87,5 @@ async function triggerNotifications() {
 
   return true;
 }
+
+start();
