@@ -9,7 +9,7 @@ dontenv.config();
 discord.login(process.env.DISCORD_BOT_TOKEN);
 
 const DEFAULT_START_ROUND = 20533346;
-const ROUND_INTERVAL = 500;
+const ROUND_INTERVAL = 1000;
 const APP_DICTIONARY = Object.entries(MainnetTokenPairs).map(([pair, data]) => {
   return {
     pair,
@@ -51,7 +51,7 @@ async function start() {
     }
     startingRound = maxRound;
     maxRound = await getMaxRound();
-  }, 1000 * 60 * 15); // 15 minutes
+  }, 1000 * 60 * 30); // 30 minutes
 }
 
 async function getStartingRound(): Promise<number> {
@@ -83,7 +83,11 @@ async function getLiquidationTxns(
     const foundAppTxns = await indexer
       .searchForTransactions()
       .applicationID(applicationId)
-      .maxRound(startingRound + ROUND_INTERVAL)
+      .maxRound(
+        startingRound + ROUND_INTERVAL < maxBlock
+          ? startingRound + ROUND_INTERVAL
+          : maxBlock
+      )
       .minRound(startingRound)
       .do();
     const txns = foundAppTxns.transactions;
